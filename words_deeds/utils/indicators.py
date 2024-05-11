@@ -170,7 +170,7 @@ equalgr_16 = Indicator(name="equalgr_16", more_dem=[1])
 
 rightres_1 = Indicator(name="rightres_1", less_dem=[1])
 
-rightres_2 = Indicator(name="rightres_1", less_dem=[1])
+rightres_2 = Indicator(name="rightres_2", less_dem=[1])
 
 rightres_3 = Indicator(name="rightres_3", less_dem=[1])
 
