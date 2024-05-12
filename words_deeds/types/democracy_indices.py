@@ -16,7 +16,6 @@ electoral = DemocracyType(
         partrght,
         partprf,
         partprh,
-        voteres,
         votelim_3,
         votelim_4,
         votelim_7,
@@ -101,7 +100,6 @@ egalitarian = DemocracyType(
     indicators=[
         equal,
         standliv,
-        voteres,
         voteun,
         votelim_3,
         votelim_4,

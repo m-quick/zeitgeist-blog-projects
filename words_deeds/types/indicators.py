@@ -14,8 +14,6 @@ partprf = Indicator(name="partprf", more_dem=[4], less_dem=[1, 2, 3])
 
 partprh = Indicator(name="partprh", more_dem=[4], less_dem=[1, 2, 3])
 
-voteres = Indicator(name="voteres", more_dem=[2], less_dem=[1])
-
 oversght = Indicator(name="oversght", more_dem=[1, 2, 3], less_dem=[4])
 
 voteun = Indicator(name="voteun", more_dem=[1], less_dem=[2])
@@ -134,9 +132,9 @@ uhrest_4 = Indicator(name="uhrest_4", more_dem=[0], less_dem=[1])
 
 uhrest_7 = Indicator(name="uhrest_7", more_dem=[0], less_dem=[1])
 
-lhselect_3 = Indicator(name="lhselect_3", more_dem=[0], less_dem=[1])
+lhselect_3 = Indicator(name="lhselect_3", more_dem=[1], less_dem=[0])
 
-uhselect_3 = Indicator(name="uhselect_3", more_dem=[0], less_dem=[1])
+uhselect_3 = Indicator(name="uhselect_3", more_dem=[1], less_dem=[0])
 
 jrempro_1 = Indicator(name="jrempro_1", more_dem=[0], less_dem=[1])
 
