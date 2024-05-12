@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "words-deeds"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pandas = "^2.2.2"
+numpy = "^1.26.4"
+seaborn = "^0.13.2"
+jupyter = "^1.0.0"
+ipykernel = "^6.29.4"
+scikit-learn = "^1.4.2"
+bs4 = "^0.0.2"
+requests = "^2.31.0"
+lxml = "^5.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
