@@ -22,15 +22,15 @@ hoselect = Indicator(name="hoselect", more_dem=[2], less_dem=[1, 3])
 
 hogelect = Indicator(name="hogelect", more_dem=[2], less_dem=[1, 3, 4])
 
-express = Indicator(name="express", more_dem=[1], less_dem=[2])
+express = Indicator(name="express", more_dem=[1])
 
-opinion = Indicator(name="opinion", more_dem=[1], less_dem=[2])
+opinion = Indicator(name="opinion", more_dem=[1])
 
-censor = Indicator(name="censor", more_dem=[1, 2], less_dem=[3])
+censor = Indicator(name="censor", more_dem=[1, 2])
 
-press = Indicator(name="press", more_dem=[1], less_dem=[2])
+press = Indicator(name="press", more_dem=[1])
 
-assoc = Indicator(name="assoc", more_dem=[1], less_dem=[2])
+assoc = Indicator(name="assoc", more_dem=[1])
 
 govmed = Indicator(name="govmed", more_dem=[2, 3], less_dem=[1])
 
@@ -44,9 +44,9 @@ intexec = Indicator(name="intexec", more_dem=[1, 2, 3], less_dem=[4])
 
 invexe = Indicator(name="invexe", more_dem=[1], less_dem=[2])
 
-standliv = Indicator(name="standliv", more_dem=[1], less_dem=[2])
+standliv = Indicator(name="standliv", more_dem=[1])
 
-equal = Indicator(name="equal", more_dem=[1], less_dem=[2])
+equal = Indicator(name="equal", more_dem=[1])
 
 judind = Indicator(name="judind", more_dem=[1], less_dem=[2])
 
@@ -54,23 +54,23 @@ judfin = Indicator(name="judfin", more_dem=[1])
 
 judsal = Indicator(name="judsal", more_dem=[1], less_dem=[2])
 
-rulelaw = Indicator(name="rulelaw", more_dem=[1], less_dem=[2])
+rulelaw = Indicator(name="rulelaw", more_dem=[1])
 
-freerel = Indicator(name="freerel", more_dem=[1], less_dem=[2])
+freerel = Indicator(name="freerel", more_dem=[1])
 
-privacy = Indicator(name="privacy", more_dem=[1], less_dem=[2])
+privacy = Indicator(name="privacy", more_dem=[1])
 
-freemove = Indicator(name="freemove", more_dem=[1], less_dem=[2])
+freemove = Indicator(name="freemove", more_dem=[1])
 
-petition = Indicator(name="petition", more_dem=[1], less_dem=[2])
+petition = Indicator(name="petition", more_dem=[1])
 
-assem = Indicator(name="assem", more_dem=[1], less_dem=[2])
+assem = Indicator(name="assem", more_dem=[1])
 
-strike = Indicator(name="strike", more_dem=[1, 2], less_dem=[3])
+strike = Indicator(name="strike", more_dem=[1, 2])
 
-inalrght = Indicator(name="inalrght", more_dem=[1], less_dem=[2])
+inalrght = Indicator(name="inalrght", more_dem=[1])
 
-devlpers = Indicator(name="devlpers", more_dem=[1], less_dem=[2])
+devlpers = Indicator(name="devlpers", more_dem=[1])
 
 votelim_3 = Indicator(name="votelim_3", more_dem=[0], less_dem=[1])
 
