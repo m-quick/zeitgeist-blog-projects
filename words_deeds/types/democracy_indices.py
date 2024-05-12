@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from words_deeds.utils.indicators import *
+from words_deeds.types.indicators import *
 
 
 @dataclass
