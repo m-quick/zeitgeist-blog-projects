@@ -2,7 +2,7 @@
 
 ## Europe (5):
 * Ukraine ✅
-* France
+* France ✅
 * Italy
 * United Kingdom
 * Germany
