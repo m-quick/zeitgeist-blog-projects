@@ -1,0 +1,10 @@
+pandas
+numpy
+seaborn
+matplotlib
+jupyter
+ipykernel
+google-cloud-bigquery
+python-dotenv
+db-dtypes
+requests
