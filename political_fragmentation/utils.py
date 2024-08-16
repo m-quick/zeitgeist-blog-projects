@@ -38,8 +38,14 @@ class GiniCalculator:
             ].unique()
             for candidate in candidates:
                 filter_condition = (
-                    election_results_df[candidates_col] == candidate
-                ) & (election_results_df[election_year_col] == election)
+                    (election_results_df[candidates_col] == candidate)
+                    & (election_results_df[election_year_col] == election)
+                    & (
+                        election_results_df[[votes_total_col, votes_pct_col]]
+                        .notna()
+                        .all(axis=1)
+                    )
+                )
                 vote_pct = election_results_df.loc[
                     filter_condition, votes_pct_col
                 ].to_list()
