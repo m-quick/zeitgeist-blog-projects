@@ -8,3 +8,4 @@ google-cloud-bigquery
 python-dotenv
 db-dtypes
 requests
+shapely
