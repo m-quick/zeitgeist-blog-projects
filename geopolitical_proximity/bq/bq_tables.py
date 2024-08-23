@@ -36,7 +36,12 @@ class Table:
 nodes = Table(
     dataset=geopolitical_proximity,
     name="nodes",
-    columns=[Column("id", int), Column("name", str), Column("type", str)],
+    columns=[
+        Column("id", int),
+        Column("name", str),
+        Column("iso3", str),
+        Column("type", str),
+    ],
 )
 
 boundaries = Table(
