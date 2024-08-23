@@ -9,3 +9,5 @@ python-dotenv
 db-dtypes
 requests
 shapely
+lxml
+geopandas
