@@ -47,7 +47,7 @@ nodes = Table(
 boundaries = Table(
     dataset=geopolitical_proximity,
     name="boundaries",
-    columns=[Column("node_id", int), Column("geometry", Polygon)],
+    columns=[Column("node_id", int), Column("geometry", str)],
 )
 
 node_data = Table(
