@@ -4,7 +4,6 @@ from google.cloud.bigquery import SchemaField
 from typing import Type
 from bq.bq_types import BQ_TYPES
 from settings import PROJECT
-from shapely import Polygon
 from datetime import datetime
 
 
@@ -55,24 +54,24 @@ node_data = Table(
     name="node_data",
     columns=[
         Column("node_id", int),
-        Column("indicator_id", int),
+        Column("variable_id", int),
         Column("value", float),
         Column("value_norm", float),
         Column("is_latest", bool),
-        Column("date_updated", datetime),
+        Column("date_added", datetime),
         Column("year", int, "NULLABLE"),
     ],
 )
 
-indicators = Table(
+variables = Table(
     dataset=geopolitical_proximity,
-    name="indicators",
-    columns=[Column("id", int), Column("name", str), Column("type", str)],
+    name="variables",
+    columns=[Column("id", int), Column("name", str)],
 )
 
-connections_data = Table(
+relationships_data = Table(
     dataset=geopolitical_proximity,
-    name="connections_data",
+    name="relationships_data",
     columns=[
         Column("source_id", int),
         Column("target_id", int),
