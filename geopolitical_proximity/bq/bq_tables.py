@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from bq.bq_datasets import Dataset, geopolitical_proximity
-from google.cloud.bigquery import SchemaField
+from google.cloud.bigquery import SchemaField, Table as BQTable
 from typing import Type
 from bq.bq_types import BQ_TYPES
 from settings import PROJECT
@@ -31,6 +31,10 @@ class Table:
             for col in self.columns
         ]
 
+    @property
+    def bq_table(self):
+        return BQTable(table_ref=self.id, schema=self.schema)
+
 
 nodes = Table(
     dataset=geopolitical_proximity,
@@ -57,6 +61,7 @@ node_data = Table(
         Column("variable_id", int),
         Column("value", float),
         Column("value_norm", float),
+        Column("is_imputed", bool),
         Column("is_latest", bool),
         Column("date_added", datetime),
         Column("year", int, "NULLABLE"),
@@ -78,6 +83,7 @@ relationships_data = Table(
         Column("indicator_id", int),
         Column("value", float),
         Column("value_norm", float),
+        Column("is_imputed", bool),
         Column("is_latest", bool),
         Column("date_updated", datetime),
         Column("year", int, "NULLABLE"),
