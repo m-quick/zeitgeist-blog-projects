@@ -2,8 +2,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import requests
-from sklearn.preprocessing import StandardScaler
-from typing import Optional, Callable, Union
+from typing import Optional, Callable
 from google.cloud.bigquery import Client
 from settings import PROJECT
 from bq.bq_tables import node_data, nodes, variables
@@ -23,7 +22,6 @@ class WBDataHandler:
     def __init__(self, variable: Variable) -> None:
         self.bq = Client(PROJECT)
         self.variable = variable
-        self.scaler = StandardScaler()
 
     def get_data(
         self,
@@ -53,10 +51,12 @@ class WBDataHandler:
             page += 1
             params.update({"page": page})
 
-        indicator_df = pd.DataFrame(indicator_data)
-        indicator_df = indicator_df[["countryiso3code", "date", "value"]]
-        indicator_df["date"] = indicator_df["date"].astype(int)
-        return indicator_df
+        dataframe = pd.DataFrame(indicator_data)
+        dataframe = dataframe[["countryiso3code", "date", "value"]]
+        dataframe["date"] = dataframe["date"].astype(int)
+        dataframe = dataframe.sort_values(["countryiso3code", "date"], ascending=True)
+        dataframe["is_imputed"] = False
+        return dataframe
 
     def get_node_ids(self) -> pd.DataFrame:
         job = self.bq.query(f"SELECT DISTINCT id AS node_id, iso3 FROM `{nodes.id}`")
@@ -68,53 +68,48 @@ class WBDataHandler:
             node_ids, left_on="countryiso3code", right_on="iso3", how="right"
         ).drop("countryiso3code", axis=1)
 
-    def get_nodes_to_impute(
-        self, indicators_df: pd.DataFrame, year_cutoff: int, get_rows: bool = False
-    ) -> Union[int, pd.DataFrame]:
-        none_recent_df = (
-            indicators_df.loc[indicators_df["value"].notna()]
-            .groupby("iso3", as_index=False)["date"]
-            .max()
-            .sort_values("date", ascending=True)
-            .query(f"date < {year_cutoff}")
-        )
-        if get_rows:
-            return none_recent_df
-        return len(none_recent_df)
-
     def normalise_values(
         self,
-        raw_values: pd.DataFrame,
+        dataframe: pd.DataFrame,
+        group_by_col: str,
+        raw_values_col: str,
         apply_log: bool = True,
         log_function: Callable[[float], float] = np.log1p,
     ) -> list[float]:
+        normalised_df = dataframe.copy()
         if apply_log:
-            raw_values = raw_values.apply(log_function)
-        return self.scaler.fit_transform(raw_values)
+            normalised_df[raw_values_col] = normalised_df[raw_values_col].apply(
+                log_function
+            )
+        return normalised_df.groupby(group_by_col)[raw_values_col].transform(
+            lambda x: (x - x.mean()) / x.std()
+        )
 
-    def format_df_for_upload(self, indicator_df: pd.DataFrame) -> pd.DataFrame:
-        indicator_df = indicator_df.rename(
+    def format_df_for_upload(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        dataframe = dataframe.rename(
             columns={
                 "date": "year",
             }
         ).assign(variable_id=self.variable.id, date_added=datetime.now())
-        indicator_df["is_latest"] = (
-            indicator_df["year"]
-            .groupby(indicator_df["node_id"])
+        dataframe["is_latest"] = (
+            dataframe["year"]
+            .groupby(dataframe["node_id"])
             .transform(lambda x: x == max(x))
         )
-        indicator_df = indicator_df[[col.name for col in node_data.columns]]
-        return indicator_df
+        dataframe["is_imputed"] = dataframe["is_imputed"].fillna(True)
+        dataframe = dataframe[[col.name for col in node_data.columns]]
+        return dataframe
 
-    def upload_to_bq(self, indicators_df: pd.DataFrame) -> bool:
+    def upload_to_bq(self, dataframe: pd.DataFrame) -> None:
         data_uploaded = self.bq.load_table_from_dataframe(
-            dataframe=indicators_df,
+            dataframe=dataframe,
             destination=node_data.bq_table,
         )
+        print("Data uploaded", data_uploaded.done(), sep=": ")
         indicators_updated = self.bq.load_table_from_dataframe(
             dataframe=pd.DataFrame(
                 {"id": self.variable.id, "name": self.variable.name}, index=[0]
             ),
             destination=variables.bq_table,
         )
-        return data_uploaded.done() and indicators_updated.done()
+        print("Updated variables table", indicators_updated.done(), sep=": ")
