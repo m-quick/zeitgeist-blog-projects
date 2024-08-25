@@ -11,3 +11,4 @@ requests
 shapely
 lxml
 geopandas
+scikit-learn
