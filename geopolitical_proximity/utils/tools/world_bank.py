@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import requests
 from typing import Optional, Callable
-from google.cloud.bigquery import Client
+from google.cloud.bigquery import Client, LoadJob
 from settings import PROJECT
 from bq.bq_tables import node_data, nodes, variables
 from utils.types.variables import Variable
@@ -55,7 +55,7 @@ class WBDataHandler:
         dataframe = dataframe[["countryiso3code", "date", "value"]]
         dataframe["date"] = dataframe["date"].astype(int)
         dataframe = dataframe.sort_values(["countryiso3code", "date"], ascending=True)
-        dataframe["is_imputed"] = False
+        dataframe.loc[dataframe["value"].notna(), "is_imputed"] = False
         return dataframe
 
     def get_node_ids(self) -> pd.DataFrame:
@@ -100,16 +100,18 @@ class WBDataHandler:
         dataframe = dataframe[[col.name for col in node_data.columns]]
         return dataframe
 
-    def upload_to_bq(self, dataframe: pd.DataFrame) -> None:
+    def upload_to_bq(self, dataframe: pd.DataFrame) -> bool:
+        jobs_status: list[LoadJob] = []
         data_uploaded = self.bq.load_table_from_dataframe(
             dataframe=dataframe,
             destination=node_data.bq_table,
         )
-        print("Data uploaded", data_uploaded.done(), sep=": ")
+        jobs_status.append(data_uploaded)
         indicators_updated = self.bq.load_table_from_dataframe(
             dataframe=pd.DataFrame(
                 {"id": self.variable.id, "name": self.variable.name}, index=[0]
             ),
             destination=variables.bq_table,
         )
-        print("Updated variables table", indicators_updated.done(), sep=": ")
+        jobs_status.append(indicators_updated)
+        return all([job.error_result is None for job in jobs_status])
