@@ -1,8 +1,9 @@
 from datetime import datetime
-import pandas as pd
+from typing import Callable, Optional
+
 import numpy as np
+import pandas as pd
 import requests
-from typing import Optional, Callable
 from bq.bq_tables import node_data
 from utils.tools import BQConnector
 from utils.types.variables import Variable
@@ -22,7 +23,7 @@ class WBDataHandler:
         countries: Optional[list[str]] = None,
     ) -> pd.DataFrame:
         countries_str = ", ".join(countries) if countries else "all"
-        url = f"https://api.worldbank.org/v2/country/{countries_str}/indicator/{indicator_code}"
+        url = f"https://api.worldbank.org/v2/country/{countries_str}/indicator/{indicator_code}"  # noqa: E501
         has_data = True
         page = 1
         params = {
@@ -33,7 +34,7 @@ class WBDataHandler:
         }
         indicator_data = []
         while has_data:
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=60)
             if not response.status_code == 200:
                 raise Exception(f"Invalid response: {response.text}")
             data = response.json()

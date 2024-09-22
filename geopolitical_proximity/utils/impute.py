@@ -1,7 +1,8 @@
-import pandas as pd
-import numpy as np
-from typing import Union, Optional
 import warnings
+from typing import Optional, Union
+
+import numpy as np
+import pandas as pd
 from sklearn.impute import KNNImputer
 
 warnings.filterwarnings("ignore")

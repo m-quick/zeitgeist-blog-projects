@@ -1,7 +1,7 @@
 import pandas as pd
-from google.cloud.bigquery import LoadJob, Client
+from bq.bq_tables import node_data, nodes, variables
+from google.cloud.bigquery import Client, LoadJob
 from settings import PROJECT
-from bq.bq_tables import variables, node_data, nodes
 from utils.types.variables import Variable
 
 
@@ -19,7 +19,7 @@ class BQConnector:
         self.bq = Client(PROJECT)
 
     def get_node_ids(self) -> pd.DataFrame:
-        job = self.bq.query(f"SELECT DISTINCT id AS node_id, iso3 FROM `{nodes.id}`")
+        job = self.bq.query(f"SELECT DISTINCT id AS node_id, iso3 FROM `{nodes.id}`")  # nosec  # noqa: E501
         return job.result().to_dataframe()
 
     def upload_to_bq(self, dataframe: pd.DataFrame, variable: Variable) -> bool:

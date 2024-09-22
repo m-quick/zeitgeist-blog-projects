@@ -1,10 +1,12 @@
 from dataclasses import dataclass
-from bq.bq_datasets import Dataset, geopolitical_proximity
-from google.cloud.bigquery import SchemaField, Table as BQTable
-from typing import Type
-from bq.bq_types import BQ_TYPES
-from settings import PROJECT
 from datetime import datetime
+from typing import Type
+
+from bq.bq_datasets import Dataset, geopolitical_proximity
+from bq.bq_types import BQ_TYPES
+from google.cloud.bigquery import SchemaField
+from google.cloud.bigquery import Table as BQTable
+from settings import PROJECT
 
 
 @dataclass

@@ -1,4 +1,5 @@
 from datetime import date, datetime
+
 from shapely import Polygon
 
 BQ_TYPES = {
