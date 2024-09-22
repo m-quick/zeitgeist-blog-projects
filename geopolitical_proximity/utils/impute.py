@@ -27,20 +27,22 @@ class Imputer:
 
     @staticmethod
     def limit_consec_values(
-        values: list[Union[int, float]], max_consec: int, increment: int = 1
+        x: list[Union[int, float]], y: list[Union[int, float]], max_consec: int
     ) -> list[Union[int, float]]:
-        max_consec_vals = []
-        n_consec = 0
 
-        for i, x in enumerate(values):
-            if i == 0:
-                max_consec_vals.append(x)
-                continue
-            is_consec = x - values[i - 1] == increment
-            n_consec = (n_consec + 1) if is_consec else 0
-            if n_consec < max_consec:
-                max_consec_vals.append(x)
-        return max_consec_vals
+        missing_vals = [i for i, val in enumerate(y) if pd.isna(val)]
+        missing_in_range = [
+            val
+            for val in missing_vals
+            if any(
+                [
+                    not pd.isna(y[max(0, val - gap)])
+                    or not pd.isna(y[min(val + gap, len(y) - 1)])
+                    for gap in range(1, max_consec + 1)
+                ]
+            )
+        ]
+        return [x[i] for i in missing_in_range]
 
     def extrapolate_values(
         self,
@@ -48,23 +50,23 @@ class Imputer:
         x_col: str,
         y_col: str,
         max_consec: Optional[int] = None,
-        increment: int = 1,
         floor: Optional[int] = None,
         ceiling: Optional[int] = None,
     ) -> list[Union[int, float]]:
         extrapolated_df = dataframe.copy()
+        if not max_consec:
+            max_consec = len(extrapolated_df[x_col].unique()) - 2
         for group in extrapolated_df[self.group_by_col].unique():
-            has_missing = extrapolated_df[y_col].isna()
             of_group = extrapolated_df[self.group_by_col] == group
-            complete_data = (~has_missing) & (of_group)
+            complete_data = (extrapolated_df[y_col].notna()) & (of_group)
             if len(extrapolated_df[complete_data]) < 2:
                 continue
-            x = extrapolated_df.loc[complete_data, x_col]
-            y = extrapolated_df.loc[complete_data, y_col]
-            x_pred = extrapolated_df.loc[(has_missing) & (of_group), x_col]
-            if max_consec:
-                x_pred = self.limit_consec_values(x_pred, max_consec, increment)
-            coeff, intercept = np.polyfit(x, y, 1)
+            x_train = extrapolated_df.loc[complete_data, x_col]
+            y_train = extrapolated_df.loc[complete_data, y_col]
+            x_total = extrapolated_df.loc[of_group, x_col].tolist()
+            y_total = extrapolated_df.loc[of_group, y_col].tolist()
+            x_pred = self.limit_consec_values(x_total, y_total, max_consec)
+            coeff, intercept = np.polyfit(x_train, y_train, 1)
             extrapolated_df.loc[
                 (extrapolated_df[x_col].isin(x_pred)) & (of_group), y_col
             ] = list(map(lambda x: intercept + coeff * x, x_pred))
