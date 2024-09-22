@@ -162,3 +162,4 @@ cython_debug/
 *data/
 *.db*
 *service_account.json
+*.DS_Store
