@@ -3,16 +3,15 @@ import pandas as pd
 import numpy as np
 import requests
 from typing import Optional, Callable
-from google.cloud.bigquery import Client, LoadJob
-from settings import PROJECT
-from bq.bq_tables import node_data, nodes, variables
+from bq.bq_tables import node_data
+from utils.tools import BQConnector
 from utils.types.variables import Variable
 
 
 class WBDataHandler:
 
     def __init__(self, variable: Variable) -> None:
-        self.bq = Client(PROJECT)
+        self.bq = BQConnector()
         self.variable = variable
 
     def get_data(
@@ -50,12 +49,8 @@ class WBDataHandler:
         dataframe.loc[dataframe["value"].notna(), "is_imputed"] = False
         return dataframe
 
-    def get_node_ids(self) -> pd.DataFrame:
-        job = self.bq.query(f"SELECT DISTINCT id AS node_id, iso3 FROM `{nodes.id}`")
-        return job.result().to_dataframe()
-
     def keep_nodes_only(self, raw_indicator_df: pd.DataFrame) -> pd.DataFrame:
-        node_ids = self.get_node_ids()
+        node_ids = self.bq.get_node_ids()
         return raw_indicator_df.merge(
             node_ids, left_on="countryiso3code", right_on="iso3", how="right"
         ).drop("countryiso3code", axis=1)
@@ -92,18 +87,5 @@ class WBDataHandler:
         dataframe = dataframe[[col.name for col in node_data.columns]]
         return dataframe
 
-    def upload_to_bq(self, dataframe: pd.DataFrame) -> bool:
-        jobs_status: list[LoadJob] = []
-        data_uploaded = self.bq.load_table_from_dataframe(
-            dataframe=dataframe,
-            destination=node_data.bq_table,
-        )
-        jobs_status.append(data_uploaded)
-        indicators_updated = self.bq.load_table_from_dataframe(
-            dataframe=pd.DataFrame(
-                {"id": self.variable.id, "name": self.variable.name}, index=[0]
-            ),
-            destination=variables.bq_table,
-        )
-        jobs_status.append(indicators_updated)
-        return all([job.error_result is None for job in jobs_status])
+    def upload_to_bq(self, dataframe: pd.DataFrame):
+        return self.bq.upload_to_bq(dataframe, self.variable)
